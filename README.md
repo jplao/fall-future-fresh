@@ -2,24 +2,34 @@
 
 Registration + admin check-in + admin dashboard for the Sept 27 event. Modeled on the [FutureFresh](https://github.com/jplao/FutureFresh) repo, with the tournament bracket features removed and a fresh (not-yet-configured) backend.
 
-## Before the event: fill in these placeholders in `index.html`
+## Setup: credentials
 
-Search for `REPLACE_WITH_YOUR_` to find every spot.
+All secrets live in `config.js`, which is **gitignored** — it never gets committed or pushed, so the public repo never carries real keys.
+
+```bash
+cp config.example.js config.js
+```
+
+Then edit `config.js` and fill in:
 
 1. **Firebase Realtime Database** (real-time sync of registrations)
    - Create a new project at [console.firebase.google.com](https://console.firebase.google.com), add a Realtime Database (test mode is fine to start).
-   - Copy the config object into `firebaseConfig` (~line 908).
+   - Copy the config object into `firebase`.
 
 2. **SheetDB** (Google Sheets backup of registrations)
    - Create a Google Sheet with columns matching the dancer fields (id, name, age, ageBracket, email, type, checkedIn, paid, spectators, registrationTime).
-   - Connect it at [sheetdb.io](https://sheetdb.io) and paste the API URL into `SHEETDB_API_URL` (~line 921).
+   - Connect it at [sheetdb.io](https://sheetdb.io) and paste the API URL into `sheetDbUrl`.
 
 3. **EmailJS** (confirmation emails to registrants)
    - Set up a service + template at [emailjs.com](https://www.emailjs.com).
-   - Fill in the public key (~line 614) and the service/template IDs (~line 1024).
+   - Fill in `emailJs.publicKey`, `emailJs.serviceId`, and `emailJs.templateId`.
 
 4. **Admin password**
-   - Set `ADMIN_PASSWORD` (~line 926) to something new — don't reuse the March event's password.
+   - Set `adminPassword` to something new — don't reuse the March event's password.
+
+`index.html` loads `config.js` via `<script src="config.js"></script>`, so the file must sit next to `index.html` for the page to work locally or wherever you deploy it.
+
+**Heads up:** gitignoring `config.js` keeps these values out of the GitHub repo, but it does *not* hide them from site visitors once the page is actually deployed — the admin-password check and all API keys run client-side, so anyone can view them via browser dev tools on the live site. That's a limitation carried over from the original app's design, not something the gitignore fixes.
 
 ## Notes
 

@@ -605,13 +605,15 @@
             }
         }
     </style>
+    <!-- Local, gitignored credentials -- see config.example.js -->
+    <script src="config.js"></script>
     <!-- EmailJS SDK for automatic confirmation emails -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script type="text/javascript">
         // EmailJS Configuration
         (function(){
             emailjs.init({
-                publicKey: "REPLACE_WITH_YOUR_EMAILJS_PUBLIC_KEY",
+                publicKey: window.APP_CONFIG.emailJs.publicKey,
             });
         })();
     </script>
@@ -902,28 +904,12 @@
 
     <script>
         // ====================================
-        // FIREBASE CONFIGURATION (Real-time sync)
-        // Replace this with your Firebase config from Firebase Console
+        // CREDENTIALS -- loaded from config.js (gitignored, not in this repo)
+        // See config.example.js for the template.
         // ====================================
-        const firebaseConfig = {
-            apiKey: "REPLACE_WITH_YOUR_FIREBASE_API_KEY",
-            authDomain: "REPLACE_WITH_YOUR_PROJECT.firebaseapp.com",
-            databaseURL: "https://REPLACE_WITH_YOUR_PROJECT-default-rtdb.firebaseio.com",
-            projectId: "REPLACE_WITH_YOUR_PROJECT",
-            storageBucket: "REPLACE_WITH_YOUR_PROJECT.firebasestorage.app",
-            messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",
-            appId: "REPLACE_WITH_YOUR_APP_ID"
-        };
-
-        // ====================================
-        // GOOGLE SHEETS BACKUP (For viewing/printing dancers only)
-        // ====================================
-        const SHEETDB_API_URL = "https://sheetdb.io/api/v1/REPLACE_WITH_YOUR_SHEET_ID"; // Your dancers sheet
-
-        // ====================================
-        // ADMIN PASSWORD
-        // ====================================
-        const ADMIN_PASSWORD = "REPLACE_WITH_YOUR_ADMIN_PASSWORD";
+        const firebaseConfig = window.APP_CONFIG.firebase;
+        const SHEETDB_API_URL = window.APP_CONFIG.sheetDbUrl; // Your dancers sheet
+        const ADMIN_PASSWORD = window.APP_CONFIG.adminPassword;
 
         // Initialize Firebase
         let database;
@@ -1021,8 +1007,8 @@
                 };
 
                 await emailjs.send(
-                    'REPLACE_WITH_YOUR_EMAILJS_SERVICE_ID',
-                    'REPLACE_WITH_YOUR_EMAILJS_TEMPLATE_ID',
+                    window.APP_CONFIG.emailJs.serviceId,
+                    window.APP_CONFIG.emailJs.templateId,
                     templateParams
                 );
                 
