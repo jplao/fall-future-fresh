@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Future Fresh - Sept 27 Breaking Jam</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Permanent+Marker&family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --electric-blue: #00d9ff;
+            --flame-orange: #ff6b00;
+            --gold: #ffd700;
+            --neon-green: #39ff14;
+            --deep-purple: #1a0033;
+            --brick-red: #8b1e1e;
+            --shadow: rgba(0, 0, 0, 0.8);
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            background: linear-gradient(135deg, #0a0015 0%, #1a0033 50%, #0f001f 100%);
+            color: white;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 107, 0, 0.03) 2px, rgba(255, 107, 0, 0.03) 4px),
+                radial-gradient(circle at 20% 30%, rgba(0, 217, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .grain {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="3" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.05"/></svg>');
+            opacity: 0.4;
+            pointer-events: none;
+            animation: grain 8s steps(10) infinite;
+            z-index: 1;
+        }
+
+        @keyframes grain {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-5%, -5%); }
+            20% { transform: translate(-10%, 5%); }
+            30% { transform: translate(5%, -10%); }
+            40% { transform: translate(-5%, 15%); }
+            50% { transform: translate(-10%, 5%); }
+            60% { transform: translate(15%, 0); }
+            70% { transform: translate(0, 10%); }
+            80% { transform: translate(-15%, 0); }
+            90% { transform: translate(10%, 5%); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            padding: 3rem 0;
+            position: relative;
+        }
+
+        .logo {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 5rem;
+            background: linear-gradient(45deg, var(--gold), var(--flame-orange), var(--electric-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+            letter-spacing: 0.1em;
+            transform: rotate(-2deg);
+            margin-bottom: 1rem;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: rotate(-2deg) scale(1); }
+            50% { transform: rotate(-2deg) scale(1.05); }
+        }
+
+        .tagline {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            color: var(--electric-blue);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .admin-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--gold), var(--flame-orange));
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 0.1em;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .admin-badge.show {
+            display: block;
+        }
+
+        .logout-btn {
+            background: rgba(0, 0, 0, 0.3);
+            border: none;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            margin-left: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, rgba(255, 107, 0, 0.2), rgba(0, 217, 255, 0.2));
+            border: 3px solid var(--electric-blue);
+            color: white;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .nav-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-tab:hover::before {
+            left: 100%;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, var(--flame-orange), var(--electric-blue));
+            border-color: var(--gold);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            transform: translateY(-3px);
+        }
+
+        .nav-tab.admin-only {
+            border-color: var(--gold);
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 107, 0, 0.2));
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .event-info {
+            background: linear-gradient(135deg, rgba(139, 30, 30, 0.3), rgba(26, 0, 51, 0.3));
+            border: 2px solid var(--flame-orange);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 50px var(--shadow);
+            position: relative;
+        }
+
+        .event-info::before {
+            content: '🔥';
+            position: absolute;
+            top: -20px;
+            right: 30px;
+            font-size: 3rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .info-item {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--gold);
+        }
+
+        .info-label {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            color: var(--electric-blue);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.1em;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .form-section {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(255, 107, 0, 0.1));
+            border: 2px solid var(--electric-blue);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--electric-blue);
+            border-radius: 8px;
+            color: white;
+            font-family: 'Rubik', sans-serif;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            padding: 1.2rem 3rem;
+            background: linear-gradient(135deg, var(--flame-orange), var(--gold));
+            border: 3px solid var(--gold);
+            color: white;
+            cursor: pointer;
+            border-radius: 10px;
+            letter-spacing: 0.1em;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.5);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--electric-blue), var(--deep-purple));
+            border-color: var(--electric-blue);
+        }
+
+        .dancers-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .dancer-card {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(26, 0, 51, 0.4));
+            border: 2px solid var(--electric-blue);
+            border-radius: 15px;
+            padding: 1.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .dancer-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .dancer-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .dancer-info {
+            font-size: 0.95rem;
+            color: var(--electric-blue);
+            margin: 0.3rem 0;
+        }
+
+        .checked-in {
+            display: inline-block;
+            background: var(--neon-green);
+            color: black;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .not-checked-in {
+            display: inline-block;
+            background: rgba(255, 107, 0, 0.3);
+            color: var(--flame-orange);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .bracket-btn {
+            font-family: 'Bebas Neue', sans-serif;
+            padding: 0.8rem 1.5rem;
+            background: rgba(0, 217, 255, 0.2);
+            border: 2px solid var(--electric-blue);
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .bracket-btn.active {
+            background: var(--gold);
+            color: black;
+            border-color: var(--gold);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 107, 0, 0.2), rgba(0, 0, 0, 0.4));
+            border: 2px solid var(--flame-orange);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3rem;
+            color: var(--gold);
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--electric-blue);
+            margin-top: 0.5rem;
+        }
+
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            display: none;
+        }
+
+        .login-modal.show {
+            display: flex;
+        }
+
+        .login-box {
+            background: linear-gradient(135deg, rgba(26, 0, 51, 0.95), rgba(10, 0, 21, 0.95));
+            border: 3px solid var(--gold);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.3);
+        }
+
+        .login-box h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            text-align: center;
+            letter-spacing: 0.1em;
+        }
+
+        .sync-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--electric-blue);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            z-index: 1000;
+            display: none;
+        }
+
+        .sync-status.show {
+            display: block;
+        }
+
+        .sync-status.error {
+            border-color: var(--flame-orange);
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 3rem;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .nav-tab {
+                width: 100%;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dancers-list {
+                grid-template-columns: 1fr;
+            }
+
+            /* Mobile bracket selector buttons */
+            .bracket-btn {
+                padding: 0.8rem 1.2rem;
+                font-size: 1rem;
+            }
+            /* Mobile stats grid */
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.8rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-number {
+                font-size: 1.8rem;
+            }
+
+            .stat-label {
+                font-size: 0.8rem;
+            }
+
+            /* Mobile form sections */
+            .form-section {
+                padding: 1.5rem;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            input, select, button {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            /* Mobile dancer cards */
+            .dancer-card {
+                padding: 1rem;
+            }
+
+            .dancer-name {
+                font-size: 1.1rem;
+            }
+
+            .dancer-info {
+                font-size: 0.85rem;
+            }
+
+            /* Mobile standalone spectators section */
+            .spectator-controls {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+
+            .spectator-add-btn {
+                width: 100%;
+            }
+
+            .spectator-total-display {
+                min-width: unset !important;
+                width: 100%;
+            }
+        }
+    </style>
+    <!-- EmailJS SDK for automatic confirmation emails -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        // EmailJS Configuration
+        (function(){
+            emailjs.init({
+                publicKey: "REPLACE_WITH_YOUR_EMAILJS_PUBLIC_KEY",
+            });
+        })();
+    </script>
+</head>
+<body>
+    <div class="grain"></div>
+    
+    <!-- Admin Badge -->
+    <div class="admin-badge" id="adminBadge">
+        👑 Admin Mode
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- Sync Status -->
+    <div class="sync-status" id="syncStatus"></div>
+
+    <!-- Login Modal -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-box">
+            <h2>🔐 Admin Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="adminPassword">Admin Password</label>
+                    <input type="password" id="adminPassword" required placeholder="Enter admin password">
+                </div>
+                <button type="submit" class="btn" style="width: 100%; margin-top: 1rem;">Login</button>
+                <button type="button" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;" onclick="closeLoginModal()">
+                    Continue as Viewer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo">FUTURE FRESH</div>
+            <div class="tagline">Youth Breaking Jam</div>
+        </div>
+
+        <!-- Manual Refresh Button for Public Users -->
+        <button class="btn btn-secondary" id="manualRefreshBtn" style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            z-index: 999;
+        " onclick="alert('✅ Real-time sync active! Data updates automatically.')">
+            🔄 Real-Time Sync
+        </button>
+
+        <!-- Admin Login Button - Top Left Corner -->
+        <button class="btn btn-secondary" id="adminLoginBtn" style="
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            z-index: 1000;
+            display: none;
+        " onclick="document.getElementById('loginModal').classList.add('show')">
+            🔐 Admin
+        </button>
+
+        <script>
+            // Show/hide admin login button based on login state
+            function updateLoginButton() {
+                const loginBtn = document.getElementById('adminLoginBtn');
+                if (loginBtn) {
+                    loginBtn.style.display = sessionStorage.getItem('isAdmin') === 'true' ? 'none' : 'block';
+                }
+            }
+        </script>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="home">Event Info</button>
+            <button class="nav-tab" data-tab="register">Register</button>
+            <button class="nav-tab admin-only" data-tab="checkin" style="display: none;">Admin: Check-In</button>
+            <button class="nav-tab admin-only" data-tab="dashboard" style="display: none;">Admin: Dashboard</button>
+        </div>
+
+        <!-- Home Tab -->
+        <div class="tab-content active" id="home">
+            <div class="event-info">
+                <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--gold); margin-bottom: 2rem; letter-spacing: 0.1em;">EVENT DETAILS</h2>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">📅 Date</div>
+                        <div class="info-value">September 27th, 2026</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">⏰ Time</div>
+                        <div class="info-value">12:00 PM - 6:00 PM</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">📍 Location</div>
+                        <div class="info-value">BBoy Factory<br>6401 N. Broadway<br>Denver, CO 80216</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">💰 Registration</div>
+                        <div class="info-value">$15 - Dancers<br>$10 - Spectators</div>
+                    </div>
+                </div>
+
+                <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--electric-blue); margin: 3rem 0 1rem; letter-spacing: 0.1em;">Age Divisions</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">🔥 Division 1</div>
+                        <div class="info-value">Ages 6-8</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">🔥 Division 2</div>
+                        <div class="info-value">Ages 9-11</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">🔥 Division 3</div>
+                        <div class="info-value">Ages 12-14</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">🔥 Division 4</div>
+                        <div class="info-value">Ages 15-18</div>
+                    </div>
+                </div>
+
+                <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--electric-blue); margin: 3rem 0 1rem; letter-spacing: 0.1em;">Event Features</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">🎤 Open Cyphers</div>
+                        <div class="info-value">Free-style sessions</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">🎧 DJ Spinning Breakbeats</div>
+                        <div class="info-value">Live music all day</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">👨‍⚖️ Knowledgeable Judges</div>
+                        <div class="info-value">Expert evaluation</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">🌟 Community Atmosphere</div>
+                        <div class="info-value">Positive vibes only</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Tab -->
+        <div class="tab-content" id="register">
+            <div class="form-section">
+                <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--gold); margin-bottom: 2rem; letter-spacing: 0.1em;">Dancer Registration</h2>
+                
+                <form id="registrationForm">
+                    <div class="form-group">
+                        <label for="dancerName">Dancer Name / B-Boy/B-Girl Name</label>
+                        <input type="text" id="dancerName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">Age</label>
+                        <input type="number" id="age" min="6" max="18" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ageBracket">Age Bracket (Auto-Selected)</label>
+                        <select id="ageBracket" disabled>
+                            <option value="">Select age first</option>
+                            <option value="6-8">6-8 Years</option>
+                            <option value="9-11">9-11 Years</option>
+                            <option value="12-14">12-14 Years</option>
+                            <option value="15-18">15-18 Years</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email (Optional)</label>
+                        <input type="email" id="email">
+                    </div>
+
+                    <!-- Admin-only fields -->
+                    <div id="adminRegistrationFields" style="display: none;">
+                        <div style="background: rgba(255, 215, 0, 0.1); border: 2px solid var(--gold); border-radius: 10px; padding: 1.5rem; margin-top: 1rem;">
+                            <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--gold); margin-bottom: 1rem; letter-spacing: 0.1em;">👑 Admin Quick Actions</h3>
+                            
+                            <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                                <label style="display: flex; align-items: center; cursor: pointer; font-size: 1.1rem;">
+                                    <input type="checkbox" id="quickCheckin" style="width: auto; margin-right: 0.8rem; transform: scale(1.5);">
+                                    <span>✅ Check In Immediately</span>
+                                </label>
+                                
+                                <label style="display: flex; align-items: center; cursor: pointer; font-size: 1.1rem;">
+                                    <input type="checkbox" id="quickPaid" style="width: auto; margin-right: 0.8rem; transform: scale(1.5);">
+                                    <span>💰 Mark as Paid</span>
+                                </label>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="spectatorCount">👥 Number of Spectators (optional)</label>
+                                <input type="number" id="spectatorCount" min="0" max="20" placeholder="0" value="0">
+                                <small style="color: var(--electric-blue); display: block; margin-top: 0.5rem;">$10 per spectator</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn" style="width: 100%; margin-top: 1rem;">Register Dancer</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Check-In Tab (Admin Only) -->
+        <div class="tab-content" id="checkin">
+            <div class="form-section">
+                <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--gold); margin-bottom: 2rem; letter-spacing: 0.1em;">Check-In Dancers</h2>
+                
+                <!-- Standalone Spectators Section -->
+                <div style="background: rgba(0, 217, 255, 0.1); border: 2px solid var(--electric-blue); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem;">
+                    <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--electric-blue); margin-bottom: 1rem; letter-spacing: 0.1em;">👥 Standalone Spectators</h3>
+                    <p style="color: var(--electric-blue); margin-bottom: 1rem; font-size: 0.95rem;">Add spectators who come without a registered dancer ($10 each)</p>
+                    
+                    <div class="spectator-controls" style="display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; align-items: end;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="spectatorAddCount">Number to Add</label>
+                            <input type="number" id="spectatorAddCount" min="1" value="1" placeholder="1" style="font-size: 1.2rem; padding: 1rem;">
+                        </div>
+                        <button class="btn spectator-add-btn" onclick="addStandaloneSpectators()" style="padding: 1rem 2rem; font-size: 1.1rem; white-space: nowrap; background: linear-gradient(135deg, var(--electric-blue), #0099cc);">
+                            ➕ Add Spectators
+                        </button>
+                        <div class="spectator-total-display" style="text-align: center; padding: 1rem; background: rgba(255, 215, 0, 0.1); border-radius: 8px; border: 2px solid var(--gold); min-width: 150px;">
+                            <div style="font-size: 0.9rem; color: var(--gold); margin-bottom: 0.3rem;">Current Total</div>
+                            <div style="font-size: 1.8rem; font-weight: 700; color: var(--gold);" id="standaloneSpectatorTotal">0</div>
+                            <div style="font-size: 0.85rem; color: var(--electric-blue); margin-top: 0.3rem;" id="standaloneSpectatorRevenue">$0</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button class="btn btn-secondary" onclick="resetStandaloneSpectators()" style="padding: 0.6rem 1.2rem; font-size: 0.95rem;">
+                            🔄 Reset to 0
+                        </button>
+                        <button class="btn btn-secondary" onclick="removeStandaloneSpectators()" style="padding: 0.6rem 1.2rem; font-size: 0.95rem;">
+                            ➖ Remove (enter negative)
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 2rem;">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <button class="btn" style="padding: 0.8rem 1.5rem; font-size: 1.1rem;" onclick="alert('✅ Real-time sync active! Data updates automatically.')">
+                            🔄 Real-Time Sync
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label for="searchDancers">Search Dancers</label>
+                        <input type="text" id="searchDancers" placeholder="Search by name..." oninput="updateCheckinList()">
+                    </div>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+                        <button class="bracket-btn active" onclick="filterCheckin('all')">All</button>
+                        <button class="bracket-btn" onclick="filterCheckin('checked-in')">Checked In</button>
+                        <button class="bracket-btn" onclick="filterCheckin('not-checked-in')">Not Checked In</button>
+                        <button class="bracket-btn" onclick="filterCheckin('paid')">Paid</button>
+                        <button class="bracket-btn" onclick="filterCheckin('unpaid')">Unpaid</button>
+                    </div>
+                </div>
+
+                <div id="checkinList" class="dancers-list">
+                    <!-- Dancers will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Tab (Admin Only) -->
+        <div class="tab-content" id="dashboard">
+            <div class="form-section">
+                <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--gold); margin-bottom: 2rem; letter-spacing: 0.1em; text-align: center;">Event Dashboard</h2>
+                
+                <div class="stats-grid" id="statsGrid">
+                    <!-- Stats will be populated here -->
+                </div>
+
+                <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--electric-blue); margin: 3rem 0 1rem; letter-spacing: 0.1em; text-align: center;">All Registered Dancers</h3>
+                <div id="allDancersList" class="dancers-list">
+                    <!-- All dancers will be listed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+
+    <script>
+        // ====================================
+        // FIREBASE CONFIGURATION (Real-time sync)
+        // Replace this with your Firebase config from Firebase Console
+        // ====================================
+        const firebaseConfig = {
+            apiKey: "REPLACE_WITH_YOUR_FIREBASE_API_KEY",
+            authDomain: "REPLACE_WITH_YOUR_PROJECT.firebaseapp.com",
+            databaseURL: "https://REPLACE_WITH_YOUR_PROJECT-default-rtdb.firebaseio.com",
+            projectId: "REPLACE_WITH_YOUR_PROJECT",
+            storageBucket: "REPLACE_WITH_YOUR_PROJECT.firebasestorage.app",
+            messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",
+            appId: "REPLACE_WITH_YOUR_APP_ID"
+        };
+
+        // ====================================
+        // GOOGLE SHEETS BACKUP (For viewing/printing dancers only)
+        // ====================================
+        const SHEETDB_API_URL = "https://sheetdb.io/api/v1/REPLACE_WITH_YOUR_SHEET_ID"; // Your dancers sheet
+
+        // ====================================
+        // ADMIN PASSWORD
+        // ====================================
+        const ADMIN_PASSWORD = "REPLACE_WITH_YOUR_ADMIN_PASSWORD";
+
+        // Initialize Firebase
+        let database;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+            console.log('✅ Firebase initialized successfully');
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+            alert("⚠️ Firebase not configured. Please set up your Firebase config in the HTML file.");
+        }
+
+        // Admin state
+        let isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+        let checkinFilter = 'all';
+
+        // Data - Firebase uses objects, not arrays
+        let dancers = {};
+        let standaloneSpectatorCount = 0;
+
+        // Firebase real-time listeners - automatically sync across all devices!
+        if (database) {
+            database.ref('dancers').on('value', (snapshot) => {
+                const firebaseData = snapshot.val() || {};
+                dancers = firebaseData;
+                console.log('✅ Dancers updated from Firebase:', dancers);
+                updateAllViews();
+            });
+
+            database.ref('standaloneSpectators').on('value', (snapshot) => {
+                const count = snapshot.val() || 0;
+                standaloneSpectatorCount = count;
+                console.log('✅ Standalone spectators updated from Firebase:', count);
+                if (isAdmin) {
+                    updateStandaloneSpectatorDisplay();
+                    updateDashboard();
+                }
+            });
+        }
+
+        function updateAllViews() {
+            updateCheckinList();
+            if (isAdmin) {
+                updateDashboard();
+            }
+        }
+
+        // Save dancer to BOTH Firebase and Google Sheets
+        async function saveDancer(dancer) {
+            try {
+                // 1. Save to Firebase (real-time sync)
+                if (database) {
+                    await database.ref('dancers/' + dancer.id).set(dancer);
+                    console.log('✅ Saved to Firebase:', dancer.name);
+                }
+
+                // 2. Backup to Google Sheets (for viewing/printing)
+                try {
+                    await fetch(SHEETDB_API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dancer)
+                    });
+                    console.log('✅ Backed up to Google Sheets:', dancer.name);
+                } catch (sheetError) {
+                    console.warn('⚠️ Google Sheets backup failed (Firebase saved successfully):', sheetError);
+                }
+
+                // 3. Send confirmation email (if email provided)
+                if (dancer.email) {
+                    await sendConfirmationEmail(dancer);
+                }
+
+                showSyncStatus('✅ Dancer saved!');
+            } catch (error) {
+                console.error('❌ Save error:', error);
+                showSyncStatus('❌ Failed to save dancer', true);
+                throw error;
+            }
+        }
+
+        // Send confirmation email to registered dancer
+        async function sendConfirmationEmail(dancer) {
+            try {
+                const templateParams = {
+                    to_email: dancer.email,
+                    to_name: dancer.name,
+                    age_bracket: dancer.ageBracket,
+                    event_date: 'September 27, 2026',
+                    event_time: '12:00 PM - 6:00 PM',
+                    event_location: 'BBoy Factory',
+                    event_address: '6401 N. Broadway, Denver, CO 80216',
+                    dancer_price: '$15',
+                    spectator_price: '$10'
+                };
+
+                await emailjs.send(
+                    'REPLACE_WITH_YOUR_EMAILJS_SERVICE_ID',
+                    'REPLACE_WITH_YOUR_EMAILJS_TEMPLATE_ID',
+                    templateParams
+                );
+                
+                console.log('✅ Confirmation email sent to:', dancer.email);
+            } catch (error) {
+                console.warn('⚠️ Email failed (registration still successful):', error);
+                // Don't throw - email failure shouldn't block registration
+            }
+        }
+
+        // Update dancer in BOTH Firebase and Google Sheets
+        async function updateDancer(id, updates) {
+            try {
+                showSyncStatus('☁️ Updating...');
+                console.log('Update requested - ID:', id, 'Updates:', updates);
+                
+                // Find the dancer in Firebase data
+                const dancer = dancers[id];
+                if (!dancer) {
+                    throw new Error('Dancer not found');
+                }
+                
+                console.log('Original dancer data:', dancer);
+                
+                // Create updated dancer object - preserve ALL fields
+                const updatedDancer = {
+                    id: dancer.id,
+                    name: dancer.name,
+                    age: dancer.age,
+                    ageBracket: dancer.ageBracket,
+                    email: dancer.email || '',
+                    type: dancer.type,
+                    checkedIn: dancer.checkedIn,
+                    paid: dancer.paid,
+                    spectators: dancer.spectators || 0,
+                    registrationTime: dancer.registrationTime,
+                    // Apply updates
+                    ...updates
+                };
+                
+                console.log('Updated dancer data:', updatedDancer);
+                
+                // 1. Update in Firebase (real-time sync)
+                if (database) {
+                    await database.ref('dancers/' + id).update(updates);
+                    console.log('✅ Updated in Firebase');
+                }
+                
+                // 2. Update in Google Sheets (backup)
+                try {
+                    // Delete old row
+                    await fetch(`${SHEETDB_API_URL}/id/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    // Add updated row
+                    await fetch(SHEETDB_API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updatedDancer)
+                    });
+                    console.log('✅ Updated in Google Sheets');
+                } catch (sheetError) {
+                    console.warn('⚠️ Google Sheets update failed (Firebase updated successfully)');
+                }
+                
+                showSyncStatus('✅ Updated successfully!');
+            } catch (error) {
+                console.error('Update error:', error);
+                showSyncStatus('❌ Update failed', true);
+                alert('Update failed. Please try again or check your internet connection.');
+            }
+        }
+
+        // Delete dancer from BOTH Firebase and Google Sheets
+        async function deleteDancer(id, name) {
+            if (!isAdmin) return alert('Admin access required');
+            
+            if (!confirm(`⚠️ Are you sure you want to delete ${name}?\n\nThis action cannot be undone!`)) return;
+            
+            try {
+                // Get dancer info before deleting
+                const dancer = dancers[id];
+                
+                // 1. Delete from Firebase (removes from live system)
+                if (database) {
+                    await database.ref('dancers/' + id).remove();
+                    console.log('✅ Deleted from Firebase');
+                }
+                
+                // 2. Mark as DELETED in Google Sheets (keep for records)
+                if (dancer) {
+                    try {
+                        // First delete the old entry
+                        await fetch(`${SHEETDB_API_URL}/id/${id}`, {
+                            method: 'DELETE'
+                        });
+                        
+                        // Then create new entry marked as deleted
+                        await fetch(SHEETDB_API_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                id: dancer.id,
+                                name: dancer.name,
+                                age: dancer.age,
+                                ageBracket: dancer.ageBracket,
+                                email: dancer.email || '',
+                                type: dancer.type,
+                                checkedIn: dancer.checkedIn,
+                                paid: dancer.paid,
+                                spectators: dancer.spectators || 0,
+                                registrationTime: dancer.registrationTime,
+                                deleted: true,
+                                deletedTime: new Date().toISOString()
+                            })
+                        });
+                        
+                        console.log('✅ Marked as DELETED in Google Sheets');
+                    } catch (sheetError) {
+                        console.warn('⚠️ Google Sheets update failed (Firebase deleted successfully)');
+                    }
+                }
+                
+                showSyncStatus('🗑️ Registration deleted!');
+            } catch (error) {
+                console.error('Delete error:', error);
+                showSyncStatus('❌ Failed to delete', true);
+            }
+        }
+
+        // Show sync status
+        function showSyncStatus(message, isError = false) {
+            const status = document.getElementById('syncStatus');
+            status.textContent = message;
+            status.classList.toggle('error', isError);
+            status.classList.add('show');
+            setTimeout(() => status.classList.remove('show'), 3000);
+        }
+
+        // Initialize UI based on admin status
+        function updateUIForAdminStatus() {
+            const adminTabs = document.querySelectorAll('.nav-tab.admin-only');
+            const adminBadge = document.getElementById('adminBadge');
+            const adminRegFields = document.getElementById('adminRegistrationFields');
+            
+            if (isAdmin) {
+                adminTabs.forEach(tab => tab.style.display = 'block');
+                adminBadge.classList.add('show');
+                if (adminRegFields) adminRegFields.style.display = 'block';
+            } else {
+                adminTabs.forEach(tab => tab.style.display = 'none');
+                adminBadge.classList.remove('show');
+                if (adminRegFields) adminRegFields.style.display = 'none';
+            }
+        }
+
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = document.getElementById('adminPassword').value;
+            
+            if (password === ADMIN_PASSWORD) {
+                isAdmin = true;
+                sessionStorage.setItem('isAdmin', 'true');
+                updateUIForAdminStatus();
+                updateLoginButton();
+                closeLoginModal();
+                showSyncStatus('✅ Admin login successful!');
+            } else {
+                alert('❌ Incorrect password');
+                document.getElementById('adminPassword').value = '';
+            }
+        });
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('show');
+        }
+
+        function logout() {
+            isAdmin = false;
+            sessionStorage.removeItem('isAdmin');
+            updateUIForAdminStatus();
+            updateLoginButton();
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('[data-tab="home"]').classList.add('active');
+            document.getElementById('home').classList.add('active');
+            showSyncStatus('Logged out');
+        }
+
+        // Load data from Google Sheets
+
+        // Manual refresh only - use the 🔄 Refresh button in top-right corner
+        // No auto-refresh to avoid unnecessary API calls and rate limits
+
+        // Tab Navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+                
+                if (tab.classList.contains('admin-only') && !isAdmin) {
+                    document.getElementById('loginModal').classList.add('show');
+                    return;
+                }
+                
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(targetTab).classList.add('active');
+                
+                if (targetTab === 'checkin') updateCheckinList();
+                if (targetTab === 'dashboard') updateDashboard();
+            });
+        });
+
+        // Auto-select age bracket
+        document.getElementById('age').addEventListener('input', (e) => {
+            const age = parseInt(e.target.value);
+            const bracketSelect = document.getElementById('ageBracket');
+            
+            if (age >= 6 && age <= 8) bracketSelect.value = '6-8';
+            else if (age >= 9 && age <= 11) bracketSelect.value = '9-11';
+            else if (age >= 12 && age <= 14) bracketSelect.value = '12-14';
+            else if (age >= 15 && age <= 18) bracketSelect.value = '15-18';
+            else bracketSelect.value = '';
+        });
+
+        // Registration Form
+        document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const spectatorCount = isAdmin ? (parseInt(document.getElementById('spectatorCount')?.value) || 0) : 0;
+            
+            const dancer = {
+                id: Date.now().toString(),
+                name: document.getElementById('dancerName').value,
+                age: parseInt(document.getElementById('age').value),
+                ageBracket: document.getElementById('ageBracket').value,
+                email: document.getElementById('email').value,
+                type: 'participant', // All registrations are dancers
+                checkedIn: isAdmin && document.getElementById('quickCheckin')?.checked || false,
+                paid: isAdmin && document.getElementById('quickPaid')?.checked || false,
+                spectators: spectatorCount,
+                registrationTime: new Date().toISOString()
+            };
+            
+            try {
+                showSyncStatus('☁️ Registering...');
+                await saveDancer(dancer);
+                
+                let message = `✅ ${dancer.name} registered successfully in the ${dancer.ageBracket} age bracket!`;
+                if (dancer.checkedIn) message += '\n✅ Checked in!';
+                if (dancer.paid) message += '\n💰 Marked as paid!';
+                if (spectatorCount > 0) message += `\n👥 ${spectatorCount} spectator${spectatorCount > 1 ? 's' : ''}`;
+                alert(message);
+                e.target.reset();
+            } catch (error) {
+                console.error('Registration error:', error);
+                showSyncStatus('❌ Registration failed', true);
+                alert('Registration failed. Please try again.');
+            }
+        });
+
+        // Check-in List
+        function updateCheckinList() {
+            const checkinList = document.getElementById('checkinList');
+            // Convert Firebase object to array
+            let participants = Object.values(dancers).filter(d => d.type === 'participant');
+            
+            const searchTerm = document.getElementById('searchDancers')?.value.toLowerCase() || '';
+            if (searchTerm) {
+                participants = participants.filter(d => 
+                    d.name.toLowerCase().includes(searchTerm) ||
+                    (d.email && d.email.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            if (checkinFilter === 'checked-in') {
+                participants = participants.filter(d => d.checkedIn);
+            } else if (checkinFilter === 'not-checked-in') {
+                participants = participants.filter(d => !d.checkedIn);
+            } else if (checkinFilter === 'paid') {
+                participants = participants.filter(d => d.paid);
+            } else if (checkinFilter === 'unpaid') {
+                participants = participants.filter(d => !d.paid);
+            }
+            
+            if (participants.length === 0) {
+                checkinList.innerHTML = '<p style="text-align: center; color: var(--electric-blue); font-size: 1.2rem;">No dancers match your filters.</p>';
+                return;
+            }
+            
+            checkinList.innerHTML = participants.map(dancer => `
+                <div class="dancer-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="dancer-name">${dancer.name}</div>
+                        <button onclick="editDancerName('${dancer.id}', '${dancer.name.replace(/'/g, "\\'")}')" style="background: rgba(0, 217, 255, 0.2); border: 1px solid var(--electric-blue); color: var(--electric-blue); padding: 0.3rem 0.6rem; border-radius: 5px; cursor: pointer; font-size: 0.85rem;">
+                            ✏️ Edit Name
+                        </button>
+                    </div>
+                    <div class="dancer-info">Age: ${dancer.age}</div>
+                    <div class="dancer-info">Bracket: ${dancer.ageBracket}</div>
+                    <div class="dancer-info">Email: ${dancer.email || 'N/A'}</div>
+                    <div class="dancer-info">👥 Spectators: ${dancer.spectators || 0}</div>
+                    <div style="margin-top: 0.8rem;">
+                        <span class="${dancer.checkedIn ? 'checked-in' : 'not-checked-in'}">
+                            ${dancer.checkedIn ? '✓ Checked In' : 'Not Checked In'}
+                        </span>
+                        <span class="${dancer.paid ? 'checked-in' : 'not-checked-in'}" style="margin-left: 0.5rem;">
+                            ${dancer.paid ? '💰 Paid' : '💳 Unpaid'}
+                        </span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem;">
+                        ${!dancer.checkedIn ? `
+                            <button class="btn btn-secondary" style="padding: 0.8rem; font-size: 1rem;" onclick="checkInDancer('${dancer.id}')">
+                                Check In
+                            </button>
+                        ` : `
+                            <button class="btn" style="padding: 0.8rem; font-size: 1rem; background: linear-gradient(135deg, #666, #999);" onclick="uncheckInDancer('${dancer.id}')">
+                                Undo Check-In
+                            </button>
+                        `}
+                        ${!dancer.paid ? `
+                            <button class="btn" style="padding: 0.8rem; font-size: 1rem; background: linear-gradient(135deg, var(--neon-green), #2ecc71);" onclick="markAsPaid('${dancer.id}')">
+                                Mark Paid
+                            </button>
+                        ` : `
+                            <button class="btn" style="padding: 0.8rem; font-size: 1rem; background: linear-gradient(135deg, #666, #999);" onclick="markAsUnpaid('${dancer.id}')">
+                                Mark Unpaid
+                            </button>
+                        `}
+                        <button class="btn btn-secondary" style="padding: 0.8rem; font-size: 0.9rem; grid-column: span 2;" onclick="editSpectators('${dancer.id}', '${dancer.name}', ${dancer.spectators || 0})">
+                            ✏️ Edit Spectators
+                        </button>
+                    </div>
+                    <button class="btn" style="width: 100%; margin-top: 0.5rem; padding: 0.8rem; font-size: 1rem; background: linear-gradient(135deg, #e74c3c, #c0392b); border-color: #e74c3c;" onclick="deleteDancer('${dancer.id}', '${dancer.name}')">
+                        🗑️ Delete Registration
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function filterCheckin(filter) {
+            checkinFilter = filter;
+            const buttons = document.querySelectorAll('#checkin .bracket-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateCheckinList();
+        }
+
+        async function checkInDancer(id) {
+            if (!isAdmin) return alert('Admin access required');
+            await updateDancer(id, { checkedIn: true });
+            showSyncStatus('✅ Dancer checked in!');
+        }
+
+        async function uncheckInDancer(id) {
+            if (!isAdmin) return alert('Admin access required');
+            await updateDancer(id, { checkedIn: false });
+            showSyncStatus('✅ Check-in removed!');
+        }
+
+        async function markAsPaid(id) {
+            if (!isAdmin) return alert('Admin access required');
+            await updateDancer(id, { paid: true });
+            showSyncStatus('💰 Marked as paid!');
+        }
+
+        async function markAsUnpaid(id) {
+            if (!isAdmin) return alert('Admin access required');
+            await updateDancer(id, { paid: false });
+            showSyncStatus('💳 Marked as unpaid!');
+        }
+
+        async function saveStandaloneSpectatorsToBackends(count) {
+            // Save to Firebase
+            if (database) {
+                await database.ref('standaloneSpectators').set(count);
+                console.log('✅ Standalone spectators saved to Firebase');
+            }
+            
+            // Backup to Google Sheets
+            try {
+                // Delete existing standalone spectator count row
+                await fetch(`${SHEETDB_API_URL}/id/standalone-spectators`, {
+                    method: 'DELETE'
+                });
+                
+                // Create new row with updated count
+                await fetch(SHEETDB_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: 'standalone-spectators',
+                        name: '>>> STANDALONE SPECTATORS <<<',
+                        age: 0,
+                        ageBracket: 'METADATA',
+                        email: `Total: ${count} @ $10 each = $${count * 10}`,
+                        type: 'metadata',
+                        checkedIn: false,
+                        paid: false,
+                        spectators: count,
+                        registrationTime: new Date().toISOString()
+                    })
+                });
+                
+                console.log('✅ Standalone spectators backed up to Google Sheets');
+            } catch (sheetError) {
+                console.warn('⚠️ Google Sheets backup failed (Firebase saved successfully)');
+            }
+        }
+
+        async function editDancerName(id, currentName) {
+            if (!isAdmin) return alert('Admin access required');
+            
+            const newName = prompt(`✏️ Edit dancer name:\n\nCurrent: ${currentName}\nEnter new name:`, currentName);
+            
+            if (newName === null) return; // User cancelled
+            
+            const trimmedName = newName.trim();
+            if (!trimmedName) {
+                alert('❌ Name cannot be empty!');
+                return;
+            }
+            
+            if (trimmedName === currentName) {
+                return; // No change
+            }
+            
+            await updateDancer(id, { name: trimmedName });
+            showSyncStatus(`✅ Name updated to "${trimmedName}"!`);
+        }
+
+        async function editSpectators(id, name, currentCount) {
+            if (!isAdmin) return alert('Admin access required');
+            
+            const newCount = prompt(`👥 Edit spectator count for ${name}:\n\nCurrent: ${currentCount} spectator(s)\nEnter new count:`, currentCount);
+            
+            if (newCount === null) return; // User cancelled
+            
+            const count = parseInt(newCount);
+            if (isNaN(count) || count < 0) {
+                alert('❌ Please enter a valid number (0 or greater)');
+                return;
+            }
+            
+            await updateDancer(id, { spectators: count });
+            showSyncStatus(`👥 Spectators updated to ${count}!`);
+        }
+
+        async function addStandaloneSpectators() {
+            if (!isAdmin) return alert('Admin access required');
+            
+            const input = document.getElementById('spectatorAddCount');
+            const countToAdd = parseInt(input.value) || 1;
+            
+            if (countToAdd === 0) {
+                alert('❌ Please enter a number greater than 0 to add');
+                return;
+            }
+            
+            const newTotal = standaloneSpectatorCount + countToAdd;
+            
+            if (newTotal < 0) {
+                alert('❌ Cannot have negative spectators. Use Reset to set to 0.');
+                return;
+            }
+            
+            try {
+                showSyncStatus('☁️ Adding spectators...');
+                
+                await saveStandaloneSpectatorsToBackends(newTotal);
+                
+                standaloneSpectatorCount = newTotal;
+                updateStandaloneSpectatorDisplay();
+                updateDashboard();
+                
+                const message = countToAdd > 0 
+                    ? `✅ Added ${countToAdd} spectator${countToAdd !== 1 ? 's' : ''}! Total: ${newTotal}`
+                    : `✅ Removed ${Math.abs(countToAdd)} spectator${Math.abs(countToAdd) !== 1 ? 's' : ''}! Total: ${newTotal}`;
+                    
+                showSyncStatus(message);
+                
+                // Reset input to 1
+                input.value = 1;
+            } catch (error) {
+                console.error('Error adding standalone spectators:', error);
+                showSyncStatus('❌ Failed to add', true);
+            }
+        }
+
+        async function removeStandaloneSpectators() {
+            if (!isAdmin) return alert('Admin access required');
+            
+            const countToRemove = prompt(`➖ Remove spectators\n\nCurrent total: ${standaloneSpectatorCount}\nHow many to remove?`, '1');
+            
+            if (countToRemove === null) return; // User cancelled
+            
+            const count = parseInt(countToRemove);
+            if (isNaN(count) || count <= 0) {
+                alert('❌ Please enter a valid number greater than 0');
+                return;
+            }
+            
+            const newTotal = standaloneSpectatorCount - count;
+            
+            if (newTotal < 0) {
+                alert(`❌ Cannot remove ${count}. Only ${standaloneSpectatorCount} spectators available.`);
+                return;
+            }
+            
+            try {
+                showSyncStatus('☁️ Removing spectators...');
+                
+                await saveStandaloneSpectatorsToBackends(newTotal);
+                
+                standaloneSpectatorCount = newTotal;
+                updateStandaloneSpectatorDisplay();
+                updateDashboard();
+                showSyncStatus(`✅ Removed ${count} spectator${count !== 1 ? 's' : ''}! Total: ${newTotal}`);
+            } catch (error) {
+                console.error('Error removing spectators:', error);
+                showSyncStatus('❌ Failed to remove', true);
+            }
+        }
+
+        async function resetStandaloneSpectators() {
+            if (!isAdmin) return alert('Admin access required');
+            
+            if (!confirm(`🔄 Reset standalone spectators to 0?\n\nCurrent total: ${standaloneSpectatorCount}`)) return;
+            
+            try {
+                showSyncStatus('☁️ Resetting...');
+                
+                await saveStandaloneSpectatorsToBackends(0);
+                
+                standaloneSpectatorCount = 0;
+                updateStandaloneSpectatorDisplay();
+                updateDashboard();
+                showSyncStatus('✅ Reset to 0!');
+            } catch (error) {
+                console.error('Error resetting spectators:', error);
+                showSyncStatus('❌ Failed to reset', true);
+            }
+        }
+
+        function updateStandaloneSpectatorDisplay() {
+            const totalDisplay = document.getElementById('standaloneSpectatorTotal');
+            const revenueDisplay = document.getElementById('standaloneSpectatorRevenue');
+            
+            if (totalDisplay) {
+                totalDisplay.textContent = standaloneSpectatorCount;
+            }
+            
+            if (revenueDisplay) {
+                const revenue = standaloneSpectatorCount * 10;
+                revenueDisplay.textContent = `$${revenue}`;
+            }
+        }
+
+
+        // Dashboard
+        function updateDashboard() {
+            // Convert Firebase object to array
+            const dancersArray = Object.values(dancers);
+            
+            const totalDancers = dancersArray.filter(d => d.type === 'participant').length;
+            const checkedIn = dancersArray.filter(d => d.checkedIn && d.type === 'participant').length;
+            const totalPaid = dancersArray.filter(d => d.paid).length;
+            const totalUnpaid = dancersArray.length - totalPaid;
+            
+            // Calculate spectator totals
+            const dancerSpectators = dancersArray.reduce((sum, d) => sum + (d.spectators || 0), 0);
+            const totalSpectators = dancerSpectators + standaloneSpectatorCount;
+            
+            // Revenue calculation: $15 per paid dancer + $10 per spectator (with dancers + standalone)
+            const dancerRevenue = totalPaid * 15;
+            const spectatorRevenue = totalSpectators * 10;
+            const revenue = dancerRevenue + spectatorRevenue;
+            
+            const bracketCounts = {
+                '6-8': dancersArray.filter(d => d.ageBracket === '6-8' && d.type === 'participant').length,
+                '9-11': dancersArray.filter(d => d.ageBracket === '9-11' && d.type === 'participant').length,
+                '12-14': dancersArray.filter(d => d.ageBracket === '12-14' && d.type === 'participant').length,
+                '15-18': dancersArray.filter(d => d.ageBracket === '15-18' && d.type === 'participant').length
+            };
+            
+            document.getElementById('statsGrid').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${totalDancers}</div>
+                    <div class="stat-label">Total Dancers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${checkedIn}</div>
+                    <div class="stat-label">Checked In</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${totalSpectators}</div>
+                    <div class="stat-label">Total Spectators</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem; color: var(--electric-blue);">
+                        w/ Dancers: ${dancerSpectators} | Standalone: ${standaloneSpectatorCount}
+                    </div>
+                </div>
+                <div class="stat-card" style="border-color: var(--neon-green);">
+                    <div class="stat-number">$${revenue}</div>
+                    <div class="stat-label">Total Revenue</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem; color: var(--electric-blue);">
+                        Dancers: $${dancerRevenue} | Spectators: $${spectatorRevenue}
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${totalPaid}</div>
+                    <div class="stat-label">Paid</div>
+                </div>
+                <div class="stat-card" style="border-color: var(--flame-orange);">
+                    <div class="stat-number">${totalUnpaid}</div>
+                    <div class="stat-label">Unpaid</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${bracketCounts['6-8']}</div>
+                    <div class="stat-label">Ages 6-8</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${bracketCounts['9-11']}</div>
+                    <div class="stat-label">Ages 9-11</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${bracketCounts['12-14']}</div>
+                    <div class="stat-label">Ages 12-14</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${bracketCounts['15-18']}</div>
+                    <div class="stat-label">Ages 15-18</div>
+                </div>
+            `;
+            
+            const allDancers = dancersArray.filter(d => d.type === 'participant');
+            document.getElementById('allDancersList').innerHTML = allDancers.length > 0 ? allDancers.map(dancer => `
+                <div class="dancer-card">
+                    <div class="dancer-name">${dancer.name}</div>
+                    <div class="dancer-info">Age: ${dancer.age}</div>
+                    <div class="dancer-info">Bracket: ${dancer.ageBracket}</div>
+                    <div style="margin-top: 0.5rem;">
+                        <span class="${dancer.checkedIn ? 'checked-in' : 'not-checked-in'}">
+                            ${dancer.checkedIn ? '✓ Checked In' : 'Not Checked In'}
+                        </span>
+                        <span class="${dancer.paid ? 'checked-in' : 'not-checked-in'}" style="margin-left: 0.5rem;">
+                            ${dancer.paid ? '💰 Paid' : '💳 Unpaid'}
+                        </span>
+                    </div>
+                </div>
+            `).join('') : '<p style="text-align: center; color: var(--electric-blue); font-size: 1.2rem;">No dancers registered yet.</p>';
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            updateUIForAdminStatus();
+            updateLoginButton();
+            // Firebase listeners automatically load data - no manual load needed!
+            console.log('🔥 Site initialized - Firebase real-time sync active');
+        });
+    </script>
+</body>
+</html>
