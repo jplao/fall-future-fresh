@@ -650,10 +650,6 @@
             <h2>🔐 Admin Login</h2>
             <form id="loginForm">
                 <div class="form-group">
-                    <label for="adminEmail">Admin Email</label>
-                    <input type="email" id="adminEmail" required placeholder="Enter admin email">
-                </div>
-                <div class="form-group">
                     <label for="adminPassword">Admin Password</label>
                     <input type="password" id="adminPassword" required placeholder="Enter admin password">
                 </div>
@@ -922,6 +918,11 @@
     <!-- Firebase SDK -->
 
     <script>
+        // The one Firebase Authentication admin account (see firebase.rules.json
+        // and README). Not a secret -- the password is what actually gates
+        // access, checked by Firebase itself, not by this being hidden.
+        const ADMIN_EMAIL = 'jenn.p.lao@gmail.com';
+
         // ====================================
         // EVENT DETAILS -- single source of truth. Update here only; the
         // Event Info card and confirmation emails both read from this.
@@ -1241,17 +1242,16 @@
         // Login functionality -- real Firebase Authentication sign-in
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('adminEmail').value;
             const password = document.getElementById('adminPassword').value;
 
             try {
-                await auth.signInWithEmailAndPassword(email, password);
+                await auth.signInWithEmailAndPassword(ADMIN_EMAIL, password);
                 // isAdmin, listeners, and UI are all updated by onAuthStateChanged above.
                 closeLoginModal();
                 showSyncStatus('✅ Admin login successful!');
             } catch (error) {
                 console.error('Login error:', error);
-                alert('❌ Incorrect email or password');
+                alert('❌ Incorrect password');
                 document.getElementById('adminPassword').value = '';
             }
         });
