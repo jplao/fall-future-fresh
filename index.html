@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Future Fresh 2 - Youth Breaking Battle</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Permanent+Marker&family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Permanent+Marker&family=Luckiest+Guy&family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -18,7 +18,7 @@
         }
 
         :root {
-            --electric-blue: #00d9ff;
+            --accent-pink: #ff3b6e;
             --flame-orange: #ff6b00;
             --gold: #ffd700;
             --neon-green: #39ff14;
@@ -45,7 +45,7 @@
             bottom: 0;
             background: 
                 repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 107, 0, 0.03) 2px, rgba(255, 107, 0, 0.03) 4px),
-                radial-gradient(circle at 20% 30%, rgba(0, 217, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 20% 30%, rgba(255, 59, 110, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 80% 70%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
             pointer-events: none;
             z-index: 0;
@@ -94,14 +94,15 @@
         }
 
         .logo {
-            font-family: 'Permanent Marker', cursive;
+            font-family: 'Luckiest Guy', 'Permanent Marker', cursive;
             font-size: 5rem;
-            background: linear-gradient(45deg, var(--gold), var(--flame-orange), var(--electric-blue));
+            background: linear-gradient(45deg, var(--gold), var(--flame-orange), var(--accent-pink));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
-            letter-spacing: 0.1em;
+            -webkit-text-stroke: 3px #000;
+            filter: drop-shadow(4px 4px 0 rgba(0, 0, 0, 0.7)) drop-shadow(0 0 30px rgba(255, 215, 0, 0.4));
+            letter-spacing: 0.05em;
             transform: rotate(-2deg);
             margin-bottom: 1rem;
             animation: pulse 3s ease-in-out infinite;
@@ -115,9 +116,43 @@
         .tagline {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 2rem;
-            color: var(--electric-blue);
+            color: var(--accent-pink);
             letter-spacing: 0.2em;
             text-transform: uppercase;
+        }
+
+        .battle-badge {
+            position: static;
+            margin: 1.5rem auto 0;
+            width: 150px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, var(--flame-orange), var(--gold));
+            color: var(--deep-purple);
+            font-family: 'Bebas Neue', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            line-height: 1.15;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            clip-path: polygon(50% 0%, 61% 15%, 80% 5%, 82% 25%, 100% 30%, 90% 47%, 100% 65%, 82% 70%, 80% 90%, 61% 82%, 50% 100%, 39% 82%, 20% 90%, 18% 70%, 0% 65%, 10% 47%, 0% 30%, 18% 25%, 20% 5%, 39% 15%);
+            transform: rotate(-8deg);
+            filter: drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.6));
+            padding: 1.5rem;
+        }
+
+        .checker-strip {
+            height: 22px;
+            background-image:
+                repeating-conic-gradient(#000 0% 25%, #fff 0% 50%);
+            background-size: 22px 22px;
+            border-top: 3px solid var(--gold);
+            border-bottom: 3px solid var(--gold);
+            margin: 2rem 0;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
         }
 
         .admin-badge {
@@ -167,8 +202,8 @@
             font-family: 'Bebas Neue', sans-serif;
             font-size: 1.3rem;
             padding: 1rem 2.5rem;
-            background: linear-gradient(135deg, rgba(255, 107, 0, 0.2), rgba(0, 217, 255, 0.2));
-            border: 3px solid var(--electric-blue);
+            background: linear-gradient(135deg, rgba(255, 107, 0, 0.2), rgba(255, 59, 110, 0.2));
+            border: 3px solid var(--accent-pink);
             color: white;
             cursor: pointer;
             position: relative;
@@ -194,7 +229,7 @@
         }
 
         .nav-tab.active {
-            background: linear-gradient(135deg, var(--flame-orange), var(--electric-blue));
+            background: linear-gradient(135deg, var(--flame-orange), var(--accent-pink));
             border-color: var(--gold);
             box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
             transform: translateY(-3px);
@@ -260,7 +295,7 @@
         .info-label {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 1.1rem;
-            color: var(--electric-blue);
+            color: var(--accent-pink);
             margin-bottom: 0.5rem;
             letter-spacing: 0.1em;
         }
@@ -271,8 +306,8 @@
         }
 
         .form-section {
-            background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(255, 107, 0, 0.1));
-            border: 2px solid var(--electric-blue);
+            background: linear-gradient(135deg, rgba(255, 59, 110, 0.1), rgba(255, 107, 0, 0.1));
+            border: 2px solid var(--accent-pink);
             border-radius: 20px;
             padding: 2rem;
             margin: 2rem 0;
@@ -296,7 +331,7 @@
             padding: 1rem;
             font-size: 1rem;
             background: rgba(0, 0, 0, 0.5);
-            border: 2px solid var(--electric-blue);
+            border: 2px solid var(--accent-pink);
             border-radius: 8px;
             color: white;
             font-family: 'Rubik', sans-serif;
@@ -353,8 +388,8 @@
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, var(--electric-blue), var(--deep-purple));
-            border-color: var(--electric-blue);
+            background: linear-gradient(135deg, var(--accent-pink), var(--deep-purple));
+            border-color: var(--accent-pink);
         }
 
         .dancers-list {
@@ -366,7 +401,7 @@
 
         .dancer-card {
             background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(26, 0, 51, 0.4));
-            border: 2px solid var(--electric-blue);
+            border: 2px solid var(--accent-pink);
             border-radius: 15px;
             padding: 1.5rem;
             position: relative;
@@ -388,7 +423,7 @@
 
         .dancer-info {
             font-size: 0.95rem;
-            color: var(--electric-blue);
+            color: var(--accent-pink);
             margin: 0.3rem 0;
         }
 
@@ -417,8 +452,8 @@
         .bracket-btn {
             font-family: 'Bebas Neue', sans-serif;
             padding: 0.8rem 1.5rem;
-            background: rgba(0, 217, 255, 0.2);
-            border: 2px solid var(--electric-blue);
+            background: rgba(255, 59, 110, 0.2);
+            border: 2px solid var(--accent-pink);
             color: white;
             cursor: pointer;
             border-radius: 8px;
@@ -455,7 +490,7 @@
 
         .stat-label {
             font-size: 1rem;
-            color: var(--electric-blue);
+            color: var(--accent-pink);
             margin-top: 0.5rem;
         }
 
@@ -501,7 +536,7 @@
             bottom: 20px;
             right: 20px;
             background: rgba(0, 0, 0, 0.9);
-            border: 2px solid var(--electric-blue);
+            border: 2px solid var(--accent-pink);
             padding: 1rem 1.5rem;
             border-radius: 10px;
             color: white;
@@ -651,7 +686,10 @@
         <div class="header">
             <div class="logo">FUTURE FRESH 2</div>
             <div class="tagline">The Next Generation, The Future Is Fresh</div>
+            <div class="battle-badge">Youth Breaking Battle!</div>
         </div>
+
+        <div class="checker-strip"></div>
 
         <!-- Manual Refresh Button for Public Users -->
         <button class="btn btn-secondary" id="manualRefreshBtn" style="
@@ -719,7 +757,7 @@
                     </div>
                 </div>
 
-                <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--electric-blue); margin: 3rem 0 1rem; letter-spacing: 0.1em;">Age Divisions</h3>
+                <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--accent-pink); margin: 3rem 0 1rem; letter-spacing: 0.1em;">Age Divisions</h3>
                 <div class="info-grid">
                     <div class="info-item">
                         <div class="info-label">🔥 Division 1</div>
@@ -739,7 +777,7 @@
                     </div>
                 </div>
 
-                <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--electric-blue); margin: 3rem 0 1rem; letter-spacing: 0.1em;">Event Features</h3>
+                <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--accent-pink); margin: 3rem 0 1rem; letter-spacing: 0.1em;">Event Features</h3>
                 <div class="info-grid">
                     <div class="info-item">
                         <div class="info-label">🎧 Music</div>
@@ -829,7 +867,7 @@
                             <div class="form-group">
                                 <label for="spectatorCount">👥 Number of Spectators (optional)</label>
                                 <input type="number" id="spectatorCount" min="0" max="20" placeholder="0" value="0">
-                                <small style="color: var(--electric-blue); display: block; margin-top: 0.5rem;">$10 per spectator</small>
+                                <small style="color: var(--accent-pink); display: block; margin-top: 0.5rem;">$10 per spectator</small>
                             </div>
                         </div>
                     </div>
@@ -845,22 +883,22 @@
                 <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--gold); margin-bottom: 2rem; letter-spacing: 0.1em;">Check-In Dancers</h2>
                 
                 <!-- Standalone Spectators Section -->
-                <div style="background: rgba(0, 217, 255, 0.1); border: 2px solid var(--electric-blue); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem;">
-                    <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--electric-blue); margin-bottom: 1rem; letter-spacing: 0.1em;">👥 Standalone Spectators</h3>
-                    <p style="color: var(--electric-blue); margin-bottom: 1rem; font-size: 0.95rem;">Add spectators who come without a registered dancer ($10 each)</p>
+                <div style="background: rgba(255, 59, 110, 0.1); border: 2px solid var(--accent-pink); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem;">
+                    <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--accent-pink); margin-bottom: 1rem; letter-spacing: 0.1em;">👥 Standalone Spectators</h3>
+                    <p style="color: var(--accent-pink); margin-bottom: 1rem; font-size: 0.95rem;">Add spectators who come without a registered dancer ($10 each)</p>
                     
                     <div class="spectator-controls" style="display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; align-items: end;">
                         <div class="form-group" style="margin-bottom: 0;">
                             <label for="spectatorAddCount">Number to Add</label>
                             <input type="number" id="spectatorAddCount" min="1" value="1" placeholder="1" style="font-size: 1.2rem; padding: 1rem;">
                         </div>
-                        <button class="btn spectator-add-btn" onclick="addStandaloneSpectators()" style="padding: 1rem 2rem; font-size: 1.1rem; white-space: nowrap; background: linear-gradient(135deg, var(--electric-blue), #0099cc);">
+                        <button class="btn spectator-add-btn" onclick="addStandaloneSpectators()" style="padding: 1rem 2rem; font-size: 1.1rem; white-space: nowrap; background: linear-gradient(135deg, var(--accent-pink), #0099cc);">
                             ➕ Add Spectators
                         </button>
                         <div class="spectator-total-display" style="text-align: center; padding: 1rem; background: rgba(255, 215, 0, 0.1); border-radius: 8px; border: 2px solid var(--gold); min-width: 150px;">
                             <div style="font-size: 0.9rem; color: var(--gold); margin-bottom: 0.3rem;">Current Total</div>
                             <div style="font-size: 1.8rem; font-weight: 700; color: var(--gold);" id="standaloneSpectatorTotal">0</div>
-                            <div style="font-size: 0.85rem; color: var(--electric-blue); margin-top: 0.3rem;" id="standaloneSpectatorRevenue">$0</div>
+                            <div style="font-size: 0.85rem; color: var(--accent-pink); margin-top: 0.3rem;" id="standaloneSpectatorRevenue">$0</div>
                         </div>
                     </div>
                     
@@ -908,12 +946,14 @@
                     <!-- Stats will be populated here -->
                 </div>
 
-                <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--electric-blue); margin: 3rem 0 1rem; letter-spacing: 0.1em; text-align: center;">All Registered Dancers</h3>
+                <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--accent-pink); margin: 3rem 0 1rem; letter-spacing: 0.1em; text-align: center;">All Registered Dancers</h3>
                 <div id="allDancersList" class="dancers-list">
                     <!-- All dancers will be listed here -->
                 </div>
             </div>
         </div>
+
+        <div class="checker-strip" style="margin-top: 3rem;"></div>
     </div>
 
     <!-- Firebase SDK -->
@@ -1315,7 +1355,7 @@
             }
             
             if (participants.length === 0) {
-                checkinList.innerHTML = '<p style="text-align: center; color: var(--electric-blue); font-size: 1.2rem;">No dancers match your filters.</p>';
+                checkinList.innerHTML = '<p style="text-align: center; color: var(--accent-pink); font-size: 1.2rem;">No dancers match your filters.</p>';
                 return;
             }
             
@@ -1323,7 +1363,7 @@
                 <div class="dancer-card">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="dancer-name">${dancer.name}</div>
-                        <button onclick="editDancerName('${dancer.id}', '${dancer.name.replace(/'/g, "\\'")}')" style="background: rgba(0, 217, 255, 0.2); border: 1px solid var(--electric-blue); color: var(--electric-blue); padding: 0.3rem 0.6rem; border-radius: 5px; cursor: pointer; font-size: 0.85rem;">
+                        <button onclick="editDancerName('${dancer.id}', '${dancer.name.replace(/'/g, "\\'")}')" style="background: rgba(255, 59, 110, 0.2); border: 1px solid var(--accent-pink); color: var(--accent-pink); padding: 0.3rem 0.6rem; border-radius: 5px; cursor: pointer; font-size: 0.85rem;">
                             ✏️ Edit Name
                         </button>
                     </div>
@@ -1626,14 +1666,14 @@
                 <div class="stat-card">
                     <div class="stat-number">${totalSpectators}</div>
                     <div class="stat-label">Total Spectators</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.3rem; color: var(--electric-blue);">
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem; color: var(--accent-pink);">
                         w/ Dancers: ${dancerSpectators} | Standalone: ${standaloneSpectatorCount}
                     </div>
                 </div>
                 <div class="stat-card" style="border-color: var(--neon-green);">
                     <div class="stat-number">$${revenue}</div>
                     <div class="stat-label">Total Revenue</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.3rem; color: var(--electric-blue);">
+                    <div style="font-size: 0.8rem; margin-top: 0.3rem; color: var(--accent-pink);">
                         Dancers: $${dancerRevenue} | Spectators: $${spectatorRevenue}
                     </div>
                 </div>
@@ -1678,7 +1718,7 @@
                         </span>
                     </div>
                 </div>
-            `).join('') : '<p style="text-align: center; color: var(--electric-blue); font-size: 1.2rem;">No dancers registered yet.</p>';
+            `).join('') : '<p style="text-align: center; color: var(--accent-pink); font-size: 1.2rem;">No dancers registered yet.</p>';
         }
 
         // Initialize
