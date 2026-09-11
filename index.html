@@ -734,19 +734,19 @@
                 <div class="info-grid">
                     <div class="info-item">
                         <div class="info-label">📅 Date</div>
-                        <div class="info-value">September 27th, 2026</div>
+                        <div class="info-value" id="eventDateValue"></div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">⏰ Time</div>
-                        <div class="info-value">12:00 PM - 6:00 PM</div>
+                        <div class="info-value" id="eventTimeValue"></div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">📍 Location</div>
-                        <div class="info-value"><a href="https://www.google.com/maps/search/?api=1&query=Chrysalis+Denver+116+S.+Lipan+St+Denver+CO" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline; text-underline-offset: 3px;">Chrysalis Denver<br>116 S. Lipan St<br>Denver, CO</a></div>
+                        <div class="info-value" id="eventLocationValue"></div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">💰 Registration</div>
-                        <div class="info-value">$15 - Dancers<br>$10 - Spectators</div>
+                        <div class="info-value" id="eventPriceValue"></div>
                     </div>
                 </div>
 
@@ -948,6 +948,31 @@
 
     <script>
         // ====================================
+        // EVENT DETAILS -- single source of truth. Update here only; the
+        // Event Info card and confirmation emails both read from this.
+        // ====================================
+        const EVENT_INFO = {
+            date: 'September 27, 2026',
+            time: '12:00 PM - 6:00 PM',
+            venueName: 'Chrysalis Denver',
+            addressLine: '116 S. Lipan St',
+            cityLine: 'Denver, CO',
+            mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Chrysalis+Denver+116+S.+Lipan+St+Denver+CO',
+            dancerPrice: '$15',
+            spectatorPrice: '$10'
+        };
+
+        function renderEventInfo() {
+            document.getElementById('eventDateValue').textContent = EVENT_INFO.date;
+            document.getElementById('eventTimeValue').textContent = EVENT_INFO.time;
+            document.getElementById('eventLocationValue').innerHTML =
+                `<a href="${EVENT_INFO.mapsUrl}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline; text-underline-offset: 3px;">${EVENT_INFO.venueName}<br>${EVENT_INFO.addressLine}<br>${EVENT_INFO.cityLine}</a>`;
+            document.getElementById('eventPriceValue').innerHTML =
+                `${EVENT_INFO.dancerPrice} - Dancers<br>${EVENT_INFO.spectatorPrice} - Spectators`;
+        }
+        renderEventInfo();
+
+        // ====================================
         // CREDENTIALS -- loaded from config.js (gitignored, not in this repo)
         // See config.example.js for the template.
         // ====================================
@@ -1070,12 +1095,12 @@
                     to_email: dancer.email,
                     to_name: dancer.name,
                     age_bracket: dancer.ageBracket,
-                    event_date: 'September 27, 2026',
-                    event_time: '12:00 PM - 6:00 PM',
-                    event_location: 'Chrysalis Denver',
-                    event_address: '116 S. Lipan St, Denver, CO',
-                    dancer_price: '$15',
-                    spectator_price: '$10'
+                    event_date: EVENT_INFO.date,
+                    event_time: EVENT_INFO.time,
+                    event_location: EVENT_INFO.venueName,
+                    event_address: `${EVENT_INFO.addressLine}, ${EVENT_INFO.cityLine}`,
+                    dancer_price: EVENT_INFO.dancerPrice,
+                    spectator_price: EVENT_INFO.spectatorPrice
                 };
 
                 await emailjs.send(
