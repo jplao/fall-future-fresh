@@ -35,4 +35,5 @@ Then edit `config.js` and fill in:
 
 - This is a fresh backend, separate from the March 22 event — no old registrations will show up here.
 - Brackets/tournament features aren't included in this version (registration, check-in, and dashboard only).
-- Event date/time/location/pricing on the Event Info tab currently mirror the March event — update those if anything's different for Sept 27.
+- Event details (date, time, venue, pricing, DJ/MC, prizes) match the official "Future Fresh 2" flyer for Sept 27, 2026 at Chrysalis Denver.
+- Age divisions on the site are 6-8 / 9-11 / 12-14 / 15-18 — the flyer prints "9-12" for the second bracket, but that overlaps the 12-14 division, so it's treated as a flyer typo for "9-11".
