@@ -11,7 +11,8 @@ window.APP_CONFIG = {
     appId: "REPLACE_WITH_YOUR_APP_ID"
   },
   sheetDbUrl: "https://sheetdb.io/api/v1/REPLACE_WITH_YOUR_SHEET_ID",
-  adminPassword: "REPLACE_WITH_YOUR_ADMIN_PASSWORD",
+  // No admin password here -- admin sign-in uses real Firebase Authentication
+  // (Build > Authentication > Users in the Firebase console), not a value in this file.
   emailJs: {
     publicKey: "REPLACE_WITH_YOUR_EMAILJS_PUBLIC_KEY",
     serviceId: "REPLACE_WITH_YOUR_EMAILJS_SERVICE_ID",

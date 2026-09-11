@@ -12,24 +12,35 @@ cp config.example.js config.js
 
 Then edit `config.js` and fill in:
 
-1. **Firebase Realtime Database** (real-time sync of registrations)
-   - Create a new project at [console.firebase.google.com](https://console.firebase.google.com), add a Realtime Database (test mode is fine to start).
-   - Copy the config object into `firebase`.
+1. **Firebase Realtime Database** (stores registrations; also gives check-in staff live sync across multiple devices)
+   - Create a new project at [console.firebase.google.com](https://console.firebase.google.com), add a Realtime Database.
+   - **Start it in locked mode**, not test mode — then paste the contents of [`firebase.rules.json`](firebase.rules.json) into Realtime Database → Rules in the console. Test mode leaves every registrant's name/age/email openly readable and writable by anyone with the URL.
+   - Copy the web app config object into `firebase`.
 
-2. **SheetDB** (Google Sheets backup of registrations)
+2. **Firebase Authentication** (real admin sign-in — see "How admin access works" below)
+   - In the console: **Build → Authentication → Get started → Sign-in method → Email/Password → Enable**.
+   - **Authentication → Users → Add user** — create exactly one user with your own email and a real password. That email + password is what you'll type into the site's Admin Login box.
+   - Nothing to add to `config.js` for this step — no password lives in the code.
+
+3. **SheetDB** (Google Sheets backup of registrations)
    - Create a Google Sheet with columns matching the dancer fields (id, name, age, ageBracket, email, type, checkedIn, paid, spectators, registrationTime).
    - Connect it at [sheetdb.io](https://sheetdb.io) and paste the API URL into `sheetDbUrl`.
 
-3. **EmailJS** (confirmation emails to registrants)
+4. **EmailJS** (confirmation emails to registrants)
    - Set up a service + template at [emailjs.com](https://www.emailjs.com).
    - Fill in `emailJs.publicKey`, `emailJs.serviceId`, and `emailJs.templateId`.
 
-4. **Admin password**
-   - Set `adminPassword` to something new — don't reuse the March event's password.
-
 `index.html` loads `config.js` via `<script src="config.js"></script>`, so the file must sit next to `index.html` for the page to work locally or wherever you deploy it.
 
-**Heads up:** gitignoring `config.js` keeps these values out of the GitHub repo, but it does *not* hide them from site visitors once the page is actually deployed — the admin-password check and all API keys run client-side, so anyone can view them via browser dev tools on the live site. That's a limitation carried over from the original app's design, not something the gitignore fixes.
+**Heads up:** gitignoring `config.js` keeps the Firebase/SheetDB/EmailJS keys out of the GitHub repo, but it does *not* hide them from site visitors once the page is actually deployed — they run client-side, so anyone can view them via browser dev tools on the live site. The Firebase API key/config being visible is normal and expected (Firebase is designed around this — the security rules are what actually protect the data, not keeping the config secret). The SheetDB and EmailJS keys being visible is a smaller, accepted risk for an event page like this.
+
+## How admin access works
+
+Unlike the original FutureFresh app (a plain password typed into a JavaScript check), this site uses **real Firebase Authentication** for the admin login. That matters because Firebase security rules can only tell a genuine signed-in admin apart from a random visitor if there's an actual sign-in — a client-side password compare is invisible to the database and can't be enforced there.
+
+- Public visitors can submit new registrations, but cannot read the dancer list or edit/delete anyone's entry (see `firebase.rules.json`).
+- Only the one Firebase Auth user created above (identified by UID in `firebase.rules.json`) can read the list, check people in, mark payments, or delete registrations.
+- If you ever add a second admin/staff account, add its UID to the `auth.uid === '...'` checks in `firebase.rules.json` (or switch to a `root.child('admins').child(auth.uid).exists()` lookup if you expect more than a couple).
 
 ## Notes
 

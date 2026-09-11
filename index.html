@@ -9,6 +9,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     
     <style>
         * {
@@ -671,6 +672,10 @@
             <h2>🔐 Admin Login</h2>
             <form id="loginForm">
                 <div class="form-group">
+                    <label for="adminEmail">Admin Email</label>
+                    <input type="email" id="adminEmail" required placeholder="Enter admin email">
+                </div>
+                <div class="form-group">
                     <label for="adminPassword">Admin Password</label>
                     <input type="password" id="adminPassword" required placeholder="Enter admin password">
                 </div>
@@ -709,7 +714,7 @@
             function updateLoginButton() {
                 const loginBtn = document.getElementById('adminLoginBtn');
                 if (loginBtn) {
-                    loginBtn.style.display = sessionStorage.getItem('isAdmin') === 'true' ? 'none' : 'block';
+                    loginBtn.style.display = isAdmin ? 'none' : 'block';
                 }
             }
         </script>
@@ -948,29 +953,36 @@
         // ====================================
         const firebaseConfig = window.APP_CONFIG.firebase;
         const SHEETDB_API_URL = window.APP_CONFIG.sheetDbUrl; // Your dancers sheet
-        const ADMIN_PASSWORD = window.APP_CONFIG.adminPassword;
 
         // Initialize Firebase
         let database;
+        let auth;
         try {
             firebase.initializeApp(firebaseConfig);
             database = firebase.database();
+            auth = firebase.auth();
             console.log('✅ Firebase initialized successfully');
         } catch (error) {
             console.error("Firebase initialization error:", error);
-            alert("⚠️ Firebase not configured. Please set up your Firebase config in the HTML file.");
+            alert("⚠️ Firebase not configured. Please set up your Firebase config in config.js.");
         }
 
-        // Admin state
-        let isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+        // Admin state -- real Firebase Authentication is the source of truth,
+        // not a client-side password compare, so security rules can actually
+        // tell an admin's signed-in browser apart from a public visitor's.
+        let isAdmin = false;
         let checkinFilter = 'all';
 
         // Data - Firebase uses objects, not arrays
         let dancers = {};
         let standaloneSpectatorCount = 0;
 
-        // Firebase real-time listeners - automatically sync across all devices!
-        if (database) {
+        // Admin-only Firebase listeners -- only attached for logged-in admins so
+        // public visitors never receive the full dancer list (names/ages/emails)
+        // over the wire just by loading the page.
+        function attachAdminListeners() {
+            if (!database) return;
+
             database.ref('dancers').on('value', (snapshot) => {
                 const firebaseData = snapshot.val() || {};
                 dancers = firebaseData;
@@ -982,10 +994,31 @@
                 const count = snapshot.val() || 0;
                 standaloneSpectatorCount = count;
                 console.log('✅ Standalone spectators updated from Firebase:', count);
+                updateStandaloneSpectatorDisplay();
+                updateDashboard();
+            });
+        }
+
+        function detachAdminListeners() {
+            if (!database) return;
+            database.ref('dancers').off();
+            database.ref('standaloneSpectators').off();
+            dancers = {};
+            standaloneSpectatorCount = 0;
+        }
+
+        // Restores admin state on page load if Firebase already has a persisted
+        // sign-in, and reacts to sign-in/sign-out from the login form / logout().
+        if (auth) {
+            auth.onAuthStateChanged((user) => {
+                isAdmin = !!user;
                 if (isAdmin) {
-                    updateStandaloneSpectatorDisplay();
-                    updateDashboard();
+                    attachAdminListeners();
+                } else {
+                    detachAdminListeners();
                 }
+                updateUIForAdminStatus();
+                updateLoginButton();
             });
         }
 
@@ -1205,20 +1238,20 @@
             }
         }
 
-        // Login functionality
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
+        // Login functionality -- real Firebase Authentication sign-in
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const email = document.getElementById('adminEmail').value;
             const password = document.getElementById('adminPassword').value;
-            
-            if (password === ADMIN_PASSWORD) {
-                isAdmin = true;
-                sessionStorage.setItem('isAdmin', 'true');
-                updateUIForAdminStatus();
-                updateLoginButton();
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                // isAdmin, listeners, and UI are all updated by onAuthStateChanged above.
                 closeLoginModal();
                 showSyncStatus('✅ Admin login successful!');
-            } else {
-                alert('❌ Incorrect password');
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('❌ Incorrect email or password');
                 document.getElementById('adminPassword').value = '';
             }
         });
@@ -1228,10 +1261,8 @@
         }
 
         function logout() {
-            isAdmin = false;
-            sessionStorage.removeItem('isAdmin');
-            updateUIForAdminStatus();
-            updateLoginButton();
+            auth.signOut();
+            // isAdmin, listeners, and UI are all updated by onAuthStateChanged above.
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelector('[data-tab="home"]').classList.add('active');
@@ -1708,8 +1739,10 @@
         window.addEventListener('load', () => {
             updateUIForAdminStatus();
             updateLoginButton();
-            // Firebase listeners automatically load data - no manual load needed!
-            console.log('🔥 Site initialized - Firebase real-time sync active');
+            // Admin data listeners (if any) are attached by onAuthStateChanged
+            // once Firebase resolves the persisted sign-in; nothing else to load
+            // for public visitors.
+            console.log('🔥 Site initialized');
         });
     </script>
 </body>

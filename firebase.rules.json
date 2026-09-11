@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "dancers": {
+      ".read": "auth != null && auth.uid === 'H7ls8NjeVnXcDw6luIcIZsxFVBc2'",
+      "$dancerId": {
+        ".write": "(auth != null && auth.uid === 'H7ls8NjeVnXcDw6luIcIZsxFVBc2') || (!data.exists() && newData.exists())",
+        ".validate": "newData.hasChildren(['id', 'name', 'age', 'type', 'registrationTime'])"
+      }
+    },
+    "standaloneSpectators": {
+      ".read": "auth != null && auth.uid === 'H7ls8NjeVnXcDw6luIcIZsxFVBc2'",
+      ".write": "auth != null && auth.uid === 'H7ls8NjeVnXcDw6luIcIZsxFVBc2'"
+    }
+  }
+}
