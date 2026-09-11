@@ -691,18 +691,6 @@
 
         <div class="checker-strip"></div>
 
-        <!-- Manual Refresh Button for Public Users -->
-        <button class="btn btn-secondary" id="manualRefreshBtn" style="
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 0.6rem 1.2rem;
-            font-size: 0.9rem;
-            z-index: 999;
-        " onclick="alert('✅ Real-time sync active! Data updates automatically.')">
-            🔄 Real-Time Sync
-        </button>
-
         <!-- Admin Login Button - Top Left Corner -->
         <button class="btn btn-secondary" id="adminLoginBtn" style="
             position: fixed;
@@ -913,11 +901,6 @@
                 </div>
                 
                 <div style="margin-bottom: 2rem;">
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                        <button class="btn" style="padding: 0.8rem 1.5rem; font-size: 1.1rem;" onclick="alert('✅ Real-time sync active! Data updates automatically.')">
-                            🔄 Real-Time Sync
-                        </button>
-                    </div>
                     <div class="form-group">
                         <label for="searchDancers">Search Dancers</label>
                         <input type="text" id="searchDancers" placeholder="Search by name..." oninput="updateCheckinList()">
