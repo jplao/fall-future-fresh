@@ -22,9 +22,11 @@ Then edit `config.js` and fill in:
    - **Authentication → Users → Add user** — create exactly one user with your own email and a real password. That email + password is what you'll type into the site's Admin Login box.
    - Nothing to add to `config.js` for this step — no password lives in the code.
 
-3. **SheetDB** (Google Sheets backup of registrations)
-   - Create a Google Sheet with columns matching the dancer fields (id, name, age, ageBracket, email, type, checkedIn, paid, spectators, registrationTime).
+3. **SheetDB** (Google Sheets backup of registrations — a printable/exportable mirror; Firebase is the real source of truth)
+   - Create a Google Sheet with this exact header row: `id name age ageBracket email type checkedIn paid spectators registrationTime deleted deletedTime`.
    - Connect it at [sheetdb.io](https://sheetdb.io) and paste the API URL into `sheetDbUrl`.
+   - Note: SheetDB's free tier caps you at 2 connected sheets — if you're also still running the March event's app, this may be your 2nd/3rd.
+   - Unlike Firebase, this URL has no per-user auth — it's a shared secret embedded in the client, so anyone who finds it could read/edit/delete the sheet directly. Acceptable for a backup roster, but don't treat it as protected the way Firebase now is.
 
 4. **EmailJS** (confirmation emails to registrants)
    - Set up a service + template at [emailjs.com](https://www.emailjs.com).
