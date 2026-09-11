@@ -123,10 +123,11 @@
         }
 
         .battle-badge {
-            position: static;
-            margin: 1.5rem auto 0;
-            width: 150px;
-            height: 150px;
+            position: absolute;
+            top: -30px;
+            right: 20px;
+            width: 130px;
+            height: 130px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -135,25 +136,15 @@
             color: var(--deep-purple);
             font-family: 'Bebas Neue', sans-serif;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1rem;
             line-height: 1.15;
             letter-spacing: 0.03em;
             text-transform: uppercase;
             clip-path: polygon(50% 0%, 61% 15%, 80% 5%, 82% 25%, 100% 30%, 90% 47%, 100% 65%, 82% 70%, 80% 90%, 61% 82%, 50% 100%, 39% 82%, 20% 90%, 18% 70%, 0% 65%, 10% 47%, 0% 30%, 18% 25%, 20% 5%, 39% 15%);
             transform: rotate(-8deg);
             filter: drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.6));
-            padding: 1.5rem;
-        }
-
-        .checker-strip {
-            height: 22px;
-            background-image:
-                repeating-conic-gradient(#000 0% 25%, #fff 0% 50%);
-            background-size: 22px 22px;
-            border-top: 3px solid var(--gold);
-            border-bottom: 3px solid var(--gold);
-            margin: 2rem 0;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            padding: 1.25rem;
+            z-index: 2;
         }
 
         .admin-badge {
@@ -265,19 +256,6 @@
             position: relative;
         }
 
-        .event-info::before {
-            content: '🔥';
-            position: absolute;
-            top: -20px;
-            right: 30px;
-            font-size: 3rem;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
 
         .info-grid {
             display: grid;
@@ -691,10 +669,7 @@
         <div class="header">
             <div class="logo">FUTURE FRESH 2</div>
             <div class="tagline">The Next Generation, The Future Is Fresh</div>
-            <div class="battle-badge">Youth Breaking Battle!</div>
         </div>
-
-        <div class="checker-strip"></div>
 
         <!-- Admin Login Button - Top Left Corner -->
         <button class="btn btn-secondary" id="adminLoginBtn" style="
@@ -729,6 +704,7 @@
         <!-- Home Tab -->
         <div class="tab-content active" id="home">
             <div class="event-info">
+                <div class="battle-badge">Youth Breaking Battle!</div>
                 <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--gold); margin-bottom: 2rem; letter-spacing: 0.1em;">EVENT DETAILS</h2>
                 
                 <div class="info-grid">
@@ -941,7 +917,6 @@
             </div>
         </div>
 
-        <div class="checker-strip" style="margin-top: 3rem;"></div>
     </div>
 
     <!-- Firebase SDK -->
