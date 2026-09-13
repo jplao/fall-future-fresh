@@ -900,14 +900,16 @@
                         <label for="searchDancers">Search Dancers</label>
                         <input type="text" id="searchDancers" placeholder="Search by name..." oninput="updateCheckinList()">
                     </div>
-                    <div id="checkinStatusFilters" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+                    <div style="font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--gold); letter-spacing: 0.08em; margin-top: 1.5rem;">Status</div>
+                    <div id="checkinStatusFilters" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
                         <button class="bracket-btn active" onclick="filterCheckin('all')">All</button>
                         <button class="bracket-btn" onclick="filterCheckin('checked-in')">Checked In</button>
                         <button class="bracket-btn" onclick="filterCheckin('not-checked-in')">Not Checked In</button>
                         <button class="bracket-btn" onclick="filterCheckin('paid')">Paid</button>
                         <button class="bracket-btn" onclick="filterCheckin('unpaid')">Unpaid</button>
                     </div>
-                    <div id="checkinBracketFilters" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+                    <div style="font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--gold); letter-spacing: 0.08em; margin-top: 1.5rem;">Age Bracket</div>
+                    <div id="checkinBracketFilters" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
                         <button class="bracket-btn active" onclick="filterCheckinBracket('all')">All Ages</button>
                         <button class="bracket-btn" onclick="filterCheckinBracket('6-8')">Ages 6-8</button>
                         <button class="bracket-btn" onclick="filterCheckinBracket('9-11')">Ages 9-11</button>
