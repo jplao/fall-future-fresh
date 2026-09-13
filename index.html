@@ -900,12 +900,19 @@
                         <label for="searchDancers">Search Dancers</label>
                         <input type="text" id="searchDancers" placeholder="Search by name..." oninput="updateCheckinList()">
                     </div>
-                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+                    <div id="checkinStatusFilters" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
                         <button class="bracket-btn active" onclick="filterCheckin('all')">All</button>
                         <button class="bracket-btn" onclick="filterCheckin('checked-in')">Checked In</button>
                         <button class="bracket-btn" onclick="filterCheckin('not-checked-in')">Not Checked In</button>
                         <button class="bracket-btn" onclick="filterCheckin('paid')">Paid</button>
                         <button class="bracket-btn" onclick="filterCheckin('unpaid')">Unpaid</button>
+                    </div>
+                    <div id="checkinBracketFilters" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+                        <button class="bracket-btn active" onclick="filterCheckinBracket('all')">All Ages</button>
+                        <button class="bracket-btn" onclick="filterCheckinBracket('6-8')">Ages 6-8</button>
+                        <button class="bracket-btn" onclick="filterCheckinBracket('9-11')">Ages 9-11</button>
+                        <button class="bracket-btn" onclick="filterCheckinBracket('12-14')">Ages 12-14</button>
+                        <button class="bracket-btn" onclick="filterCheckinBracket('15-18')">Ages 15-18</button>
                     </div>
                 </div>
 
@@ -991,6 +998,7 @@
         // tell an admin's signed-in browser apart from a public visitor's.
         let isAdmin = false;
         let checkinFilter = 'all';
+        let checkinBracketFilter = 'all';
 
         // Data - Firebase uses objects, not arrays
         let dancers = {};
@@ -1385,7 +1393,11 @@
             } else if (checkinFilter === 'unpaid') {
                 participants = participants.filter(d => !d.paid);
             }
-            
+
+            if (checkinBracketFilter !== 'all') {
+                participants = participants.filter(d => d.ageBracket === checkinBracketFilter);
+            }
+
             if (participants.length === 0) {
                 checkinList.innerHTML = '<p style="text-align: center; color: var(--accent-pink); font-size: 1.2rem;">No dancers match your filters.</p>';
                 return;
@@ -1444,7 +1456,15 @@
 
         function filterCheckin(filter) {
             checkinFilter = filter;
-            const buttons = document.querySelectorAll('#checkin .bracket-btn');
+            const buttons = document.querySelectorAll('#checkinStatusFilters .bracket-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateCheckinList();
+        }
+
+        function filterCheckinBracket(bracket) {
+            checkinBracketFilter = bracket;
+            const buttons = document.querySelectorAll('#checkinBracketFilters .bracket-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             updateCheckinList();
